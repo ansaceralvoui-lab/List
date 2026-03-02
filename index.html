@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Board</title>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e3c72">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Segoe UI, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .add-btn {
+            background: #00c9a7;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #ff4d6d;
+            color: white;
+            padding: 6px 10px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        li {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Task Board</h1>
+
+        <div class="input-group">
+            <input type="text" id="taskInput" placeholder="Enter a task...">
+            <button class="add-btn" onclick="addTask()">Add</button>
+        </div>
+
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+        const taskList = document.getElementById("taskList");
+        const input = document.getElementById("taskInput");
+
+        let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+        
+        function loadTasks() {
+            taskList.innerHTML = "";
+            tasks.forEach((task, index) => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+            <span>${task}</span>
+            <button class="delete-btn" onclick="deleteTask(${index})">X</button>
+        `;
+                taskList.appendChild(li);
+            });
+        }
+
+        function addTask() {
+            const task = input.value.trim();
+            if (task) {
+                tasks.push(task);
+                localStorage.setItem("tasks", JSON.stringify(tasks));
+                input.value = "";
+                loadTasks();
+            }
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+            loadTasks();
+        }
+
+        loadTasks();
+
+        
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("service-worker.js")
+                .then(() => console.log("Service Worker Registered"));
+        }
+    </script>
+
+</body>
+
+</html>
